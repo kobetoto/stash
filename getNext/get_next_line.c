@@ -95,3 +95,9 @@ char	*read_and_add(int fd, int buffer)
 	free(buff);
 	return (tmp);
 }
+
+char	*cp_line(char *s)
+{
+to do.....
+}
+i

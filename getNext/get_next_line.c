@@ -1,50 +1,97 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thodavid <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/12/10 08:15:52 by thodavid          #+#    #+#             */
+/*   Updated: 2024/12/10 12:53:01 by thodavid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
 char *get_next_line(int fd)
 {
-	char		*line;
 
-	if (fd <= 0)
+	/*				variable & init				*/
+	char		*tmp;
+	char		*line;
+	int		i;
+
+
+	i = 0;
+	tmp = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!tmp)
 		return (NULL);
-	/*READ FD & add it to tmp*/
-	line = read_and_add(fd, BUFFER_SIZE);
+	line = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!line)
+		return (NULL);
+
+
+	if (fd < 0)
+	{
+		free(tmp);
+		return (NULL);
+	}
+
+	tmp = read_and_add(fd, BUFFER_SIZE);
+	if (!tmp)
+	{
+		free (tmp);
+		return (NULL);
+	}
+
+	printf("    tmp:\n        ==%s==\n\n",tmp);
+	//function pour copier jusquau /n
+	line = cp_line(tmp);-----------------------------------
+	
+	while (tmp[i])
+	{
+		line[i] = tmp[i];
+		i++;	
+	}
+	line [i] = '\n';
+	printf("    line:\n        ==%s==\n\n",line);
+	free(tmp);
 	return (line);
 }
 
 
 char	*read_and_add(int fd, int buffer)
 {
-	char            *line;
-	char static     *tmp;
+	/*				variable & init				*/
+	char            *buff;
+	static char     *tmp;
 	int             i;
 	int             char_;
 
-	tmp = malloc(sizeof(char) * (buffer));
-	if (!tmp)
+	buff = NULL;
+	char_ = 0;
+	i = 0;
+	tmp = malloc(sizeof(char) * (buffer +1));
+	buff = malloc(sizeof(char) * (buffer));
+	if (!tmp || !buff)
 		return (NULL);
-	char_ = (int)read(fd, tmp,buffer);
+
+
+	/*				READ & stock				*/
+	char_ = (int)read(fd, buff,buffer);
 	if(char_ <= 0)
 	{
-		free(tmp);
-		//perror("errrrror");
+		free(buff);
+		perror("errrrror");
 		return (NULL); 
 	}
-	printf("    tmp:\n        ==%s==\n\n\n\n",tmp);
-	line = malloc(sizeof(char) * (buffer + 2));
-	if (!line)
-		return (NULL);
-	i = 0;
-	while (tmp[i] != '\0' && i < char_)
+	printf("    buff:\n        ==%s==\n\n",buff);
+
+	while (buff[i] && i < char_)
 	{
-	
-		line[i] = tmp[i];
-		if (tmp[i] == '\n')
-		{
-		}
+		tmp[i] = buff[i];
 		i ++;
 	}
-	line[i] = '\n';
-	line[i+1] = '\0';
-	free(tmp);
-	return (line);
+	tmp[i] = '\0';
+	free(buff);
+	return (tmp);
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include "get_next_line.h"
 
@@ -18,11 +19,11 @@ int main()
 	while (1)
 	{
 	line = get_next_line(fd);
+	printf("==%s==",line);
 	if (!line)
 	{
 		break;
 	}
-	printf("    gnl:\n        ===%s===\n\n\n",line);
 	free (line);
 	}
 }

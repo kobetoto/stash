@@ -8,4 +8,6 @@
 
 
 char *get_next_line(int fd);
-char    *read_and_add(int fd, int buffer_size);
+char	*read_and_add(int fd);
+char *check_and_cut(char *s);
+char *ft_strchr(const char *s, int c);

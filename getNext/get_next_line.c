@@ -1,70 +1,42 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: thodavid <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/10 08:15:52 by thodavid          #+#    #+#             */
-/*   Updated: 2024/12/10 12:53:01 by thodavid         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 #include "get_next_line.h"
+
 
 char *get_next_line(int fd)
 {
-	char		*line;// valeure a return
-	char		*tmp;// valeure de stockage
+	char			*line;
+	char			*buff;
+	static char		*cpy;
 
-		/*--check param--*/ 
-	if (fd < 0)			 //chek FD
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd,&line,0) < 0)
 		return (NULL);
+	
+	//read() & buff
+	buff = ft_read(fd);
 
-		/*--read & add --*/
-	tmp = read_and_add(fd);
-	if (!tmp)
-	{
-		free(tmp);
-		return (NULL);
-	}
-	/*--check & cut--*/
-	line = check_and_cut(tmp);	
-	return (line);
+	//cpy en cours
+	//probleme sur ma cpy avec allocation memoire
+	cpy = ft_strjoin(cpy, buff);
+	free(buff);
+
+	return (cpy);
 }
 
-
-char	*read_and_add(int fd)
+/*------read------*/
+char	*ft_read(int fd)
 {
-	static char			*tmp;    //gardera sa valeur a chaque appel de function
-	char 				*buff;  // stock les value lu par read
-	int					char_;//nombre de char lu par read()
-	int					i;
+	char			*buffer;
+	int				char_read;
 
-	buff = NULL;
-		/*--check param--*/ 
-	if (fd < 0)			 //chek FD
-		return (NULL);
-
-		/*--malloc BUFF + TMP--*/
-	buff = malloc(sizeof(char) * BUFFER_SIZE);
-	tmp = malloc(sizeof(char) * BUFFER_SIZE);
-	if (!buff || !tmp)
+	//1. malloc buffer
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		if(buffer == NULL)
 			return (NULL);
-			
-		/*--read()--*/
-		char_ = (int)read(fd, buff, BUFFER_SIZE);
-		if (char_ <= 0)
-			{
-				free(buff);
-				free(tmp);
-				return (NULL);
-			}
-		i = 0;
-		while (buff[i] && i < char_)
-			{
-				tmp[i] = buff[i];
-				i++;
-			}
-		tmp[i] = '\0';
-		return (tmp);
+	//2. call read()
+	char_read = read(fd,buffer,BUFFER_SIZE);
+	if(char_read <= 0)
+	{
+		free(buffer);
+		return (NULL);
+	}
+	return (buffer);
 }
